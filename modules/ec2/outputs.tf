@@ -1,6 +1,6 @@
 output "public_ip" {
   description = "IP publica del servidor web"
-  value = aws_instance.web_server.public_ip
+  value       = aws_instance.web_server.public_ip
 }
 
 output "web_server_state" {
