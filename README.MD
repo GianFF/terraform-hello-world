@@ -15,3 +15,7 @@
 4. run `terraform plan`
 5. run `terraform apply -auto-approve`
 6. run `terraform destroy -auto-approve`
+
+### Extas:
+* `terraform validate`
+* `terraform fmt`

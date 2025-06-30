@@ -7,9 +7,9 @@ variable "subnet_ids" {
 }
 
 variable "security_groups" {
-    type = list(string)
+  type = list(string)
 }
 
 variable "alb_target_group_arn" {
-    type = string
+  type = string
 }

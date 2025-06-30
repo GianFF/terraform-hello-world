@@ -5,7 +5,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true           # Habilita soporte DNS
 
   tags = {
-    Name = "terraform-vpc"                 # Nombre descriptivo
+    Name = "terraform-vpc" # Nombre descriptivo
   }
 }
 
