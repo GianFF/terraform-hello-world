@@ -1,0 +1,14 @@
+# Credenciales
+.env
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+
+# Logs
+*.log
+
+# Sistema
+.DS_Store
