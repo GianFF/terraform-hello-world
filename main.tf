@@ -38,10 +38,13 @@ module "ecs_autoscaling" {
 
 module "api_gw_alb" {
   source           = "./modules/api-gw-alb"
-  name             = "ecs-api-gw"
+
   alb_listener_arn = module.alb.alb_listener_arn
-  method           = "ANY"
-  path             = "/{proxy+}"
+  routes = [
+    { method = "ANY", path = "/{proxy+}" },
+    { method = "GET", path = "/health" },
+    { method = "POST", path = "/submit" }
+  ]
 }
 
 module "custom_domain" {
