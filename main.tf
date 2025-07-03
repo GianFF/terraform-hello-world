@@ -38,15 +38,36 @@ module "ecs_autoscaling" {
 
 module "api_gw_alb" {
   source           = "./modules/api-gw-alb"
-  name             = "ecs-api-gw"
+
   alb_listener_arn = module.alb.alb_listener_arn
-  method           = "ANY"
-  path             = "/{proxy+}"
+  routes = [
+    { method = "ANY", path = "/{proxy+}" },
+    { method = "GET", path = "/health" },
+    { method = "POST", path = "/submit" }
+  ]
+}
+
+resource "aws_acm_certificate" "custom" {
+  domain_name       = "api.edymberg.com"
+  validation_method = "DNS"
 }
 
 module "custom_domain" {
   source         = "./modules/route53"
-  domain_name    = "api.edymberg.com"
-  certificate_arn = module.certificate.acm_certificate_arn
-  api_id         = module.api_gw_alb.aws_apigatewayv2_api_id
+
+  domain_name     = "api.edymberg.com"
+  certificate_arn = aws_acm_certificate.custom.arn
+  api_id          = module.api_gw_alb.aws_apigatewayv2_api_id
+}
+
+# Crear el registro DNS tipo CNAME en Route 53 para la validación del certificado ACM
+resource "aws_route53_record" "acm_validation" {
+  for_each = {
+    for dvo in aws_acm_certificate.custom.domain_validation_options : dvo.domain_name => dvo
+  }
+  zone_id = module.custom_domain.zone_id
+  name    = each.value.resource_record_name
+  type    = each.value.resource_record_type
+  records = [each.value.resource_record_value]
+  ttl     = 60
 }
