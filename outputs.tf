@@ -19,6 +19,12 @@ output "ecs_cluster_arn" {
   value       = module.ecs.ecs_cluster_arn
 }
 
+# Salida para mostrar la URL Publica del API GW
+output "api_gateway_url" {
+  description = "Public endpoint of the API Gateway"
+  value       = module.api_gw.api_gateway_endpoint
+}
+
 # Salida para mostrar la IP pública de la instancia
 # output "public_ip" {
 #   description = "La IP pública de la instancia EC2"

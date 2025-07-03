@@ -4,33 +4,6 @@ module "vpc" {
   cidr_block = "10.0.0.0/16"
 }
 
-# Data source para encontrar la última imagen de Amazon Linux 2
-# data "aws_ami" "amazon_linux_2" {
-#   most_recent = true
-#   owners      = ["amazon"]
-
-#   filter {
-#     name   = "name"
-#     values = ["amzn2-ami-hvm-*-x86_64-gp2"]
-#   }
-
-#   filter {
-#     name   = "virtualization-type"
-#     values = ["hvm"]
-#   }
-# }
-
-# module "ec2" {
-#   source           = "./modules/ec2"
-#   ami              = data.aws_ami.amazon_linux_2.id
-#   instance_type    = "t2.micro"
-#   subnet_id        = module.vpc.subnet_id # TODO: Esto cambio a subnet_ids
-#   vpc_id           = module.vpc.vpc_id
-#   public_key_path  = "~/.ssh/id_rsa.pub"
-#   # user_data        = file("${path.module}/scripts/web_server_hello-world_script.sh")
-#   user_data        = file("${path.module}/scripts/web_server_docker-image_script.sh")
-# }
-
 module "security_groups" {
   source = "./modules/sg"
 
@@ -61,4 +34,19 @@ module "ecs_autoscaling" {
   max_capacity        = 5
   scale_out_threshold = 60
   scale_in_threshold  = 30
+}
+
+module "api_gw_alb" {
+  source           = "./modules/api-gw-alb"
+  name             = "ecs-api-gw"
+  alb_listener_arn = module.alb.alb_listener_arn
+  method           = "ANY"
+  path             = "/{proxy+}"
+}
+
+module "custom_domain" {
+  source         = "./modules/route53"
+  domain_name    = "api.edymberg.com"
+  certificate_arn = module.certificate.acm_certificate_arn
+  api_id         = module.api_gw_alb.aws_apigatewayv2_api_id
 }

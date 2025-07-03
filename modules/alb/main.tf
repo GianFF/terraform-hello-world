@@ -41,3 +41,18 @@ resource "aws_lb_listener" "http" {
     target_group_arn = aws_lb_target_group.ecs_tg.arn
   }
 }
+
+# TODO: API Gateway requires HTTPS (port 443) for production-level integrations with ALB.
+# TODO: provision an ACM certificate (aws_acm_certificate) and pass the ARN into this module via var.acm_certificate_arn
+# resource "aws_lb_listener" "https" {
+#   load_balancer_arn = aws_lb.ecs_alb.arn
+#   port              = 443
+#   protocol          = "HTTPS"
+#   ssl_policy        = "ELBSecurityPolicy-2016-08"
+#   certificate_arn   = var.acm_certificate_arn
+#
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.ecs_tg.arn
+#   }
+# }
