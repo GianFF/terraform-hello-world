@@ -65,7 +65,7 @@ resource "aws_route53_record" "acm_validation" {
   for_each = {
     for dvo in aws_acm_certificate.custom.domain_validation_options : dvo.domain_name => dvo
   }
-  zone_id = aws_route53_zone.zone.zone_id
+  zone_id = module.custom_domain.zone_id
   name    = each.value.resource_record_name
   type    = each.value.resource_record_type
   records = [each.value.resource_record_value]
